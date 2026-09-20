@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Containerizing a College Portal | IBM Project Submission</title>
+  <meta name="description" content="A modern, responsive, 3-tier containerized academic portal showcasing Docker orchestration, microservices architecture, and role-based student/faculty/admin dashboards.">
+  <meta name="keywords" content="Docker, Containerization, IBM Cloud, College Portal, Express, PostgreSQL, Microservices">
+  <meta name="author" content="Apex Institute of Technology & IBM Academic Project">
+
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐳</text></svg>">
+
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- =================================================================
+       PRELOADER
+       ================================================================= -->
+  <div id="preloader">
+    <div class="loader-box">
+      <div class="loader-spinner"></div>
+      <div class="loader-text">Initializing Container Cluster...</div>
+      <div class="loader-subtext">frontend • backend • postgres</div>
+    </div>
+  </div>
+
+  <!-- =================================================================
+       NAVIGATION BAR
+       ================================================================= -->
+  <nav class="navbar" id="navbar">
+    <div class="container nav-container">
+      <div class="brand-logo" onclick="navigateTo('home')">
+        <div class="brand-icon-wrapper">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">APEX PORTAL</span>
+          <span class="brand-tag">IBM Containerized EdTech</span>
+        </div>
+      </div>
+
+      <!-- Desktop Navigation Links -->
+      <ul class="nav-links" id="navLinks">
+        <li><a class="nav-link active" onclick="navigateTo('home')">Home</a></li>
+        <li class="nav-dropdown-wrapper">
+          <a class="nav-link nav-portal-highlight"><i class="fa-solid fa-graduation-cap"></i> Portals <i class="fa-solid fa-chevron-down" style="font-size: 0.68rem; margin-left: 3px;"></i></a>
+          <div class="nav-dropdown-content">
+            <a onclick="openPortal('student')" class="dropdown-link">
+              <i class="fa-solid fa-user-graduate" style="color: var(--ibm-blue-60);"></i>
+              <span><strong>Student Portal</strong><small>Academic, Grades & Timetable</small></span>
+            </a>
+            <a onclick="openPortal('faculty')" class="dropdown-link">
+              <i class="fa-solid fa-chalkboard-user" style="color: var(--accent-cyan);"></i>
+              <span><strong>Faculty Portal</strong><small>Attendance, Marks & Grading</small></span>
+            </a>
+            <a onclick="openPortal('parent')" class="dropdown-link">
+              <i class="fa-solid fa-hands-holding-child" style="color: var(--ibm-teal-40);"></i>
+              <span><strong>Parent Portal</strong><small>Ward Tracking & Performance</small></span>
+            </a>
+            <a onclick="openPortal('admin')" class="dropdown-link">
+              <i class="fa-solid fa-server" style="color: #a56eff;"></i>
+              <span><strong>Admin & Telemetry</strong><small>Live Docker Cluster Hub</small></span>
+            </a>
+          </div>
+        </li>
+        <li><a class="nav-link" onclick="navigateTo('about')">About</a></li>
+        <li><a class="nav-link" onclick="navigateTo('architecture')">Architecture</a></li>
+        <li><a class="nav-link" onclick="navigateTo('courses')">Courses</a></li>
+        <li><a class="nav-link" onclick="navigateTo('events')">Events</a></li>
+        <li><a class="nav-link" onclick="navigateTo('announcements')">Announcements</a></li>
+        <li><a class="nav-link" onclick="navigateTo('contact')">Contact</a></li>
+      </ul>
+
+      <!-- Navbar Right Actions -->
+      <div class="nav-actions">
+        <!-- Live Cluster Health Pill -->
+        <div class="cluster-status-badge" id="navClusterStatus" title="Click to view live container telemetry" onclick="navigateToClusterStatus()">
+          <span class="pulse-dot"></span>
+          <span id="clusterStatusText">Cluster: 3/3 Healthy</span>
+        </div>
+
+        <!-- Notifications Bell -->
+        <div class="notif-bell-wrapper" id="notifBellWrapper">
+          <button class="notif-bell-btn" id="notifBellBtn" title="View Notifications" onclick="toggleNotificationDrawer()">
+            <i class="fa-solid fa-bell"></i>
+            <span class="notif-badge" id="notifBadge">0</span>
+          </button>
+        </div>
+
+        <!-- Dark/Light Mode Switch -->
+        <button class="theme-toggle-btn" id="themeToggleBtn" title="Toggle Dark/Light Mode" aria-label="Toggle Theme">
+          <i class="fa-solid fa-moon" id="themeIcon"></i>
+        </button>
+
+        <!-- Auth Navigation Link -->
+        <div id="authNavButtons">
+          <button class="btn btn-primary btn-sm" id="navLoginBtn" onclick="navigateTo('login')">
+            <i class="fa-solid fa-right-to-bracket"></i> Login
+          </button>
+        </div>
+
+        <!-- Mobile Menu Toggle -->
+        <button class="mobile-nav-toggle" id="mobileMenuBtn" aria-label="Toggle Navigation">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- =================================================================
+       PAGE VIEW 1: LANDING PAGE
+       ================================================================= -->
+  <main id="landingView" class="page-view active">
+
+    <!-- HERO SECTION -->
+    <section class="hero-section" id="home">
+      <!-- Animated Background Ambient Light & Floating Geometric Shapes -->
+      <div class="hero-bg-canvas">
+        <div class="ambient-glow-1"></div>
+        <div class="ambient-glow-2"></div>
+        <div class="floating-shape shape-1"></div>
+        <div class="floating-shape shape-2"></div>
+        <div class="floating-shape shape-3"></div>
+        <div class="floating-shape shape-4"></div>
+      </div>
+
+      <div class="container hero-grid">
+        <!-- Hero Left Column: Text & CTAs -->
+        <div class="hero-content">
+          <div class="hero-pill animate-on-scroll">
+            <i class="fa-brands fa-docker"></i>
+            <span>IBM Cloud & Microservice Architecture</span>
+          </div>
+
+          <h1 class="hero-title animate-on-scroll delay-1">
+            <span id="typedHeading"></span><span class="typed-cursor">|</span>
+          </h1>
+
+          <p class="hero-description animate-on-scroll delay-2">
+            A production-ready academic portal decomposed into decoupled microservices. 
+            Deploying resilient <strong>Frontend (Nginx)</strong>, <strong>Backend REST API (Node.js/Express)</strong>, 
+            and <strong>Database (PostgreSQL 16)</strong> tiers via orchestrated Docker containers.
+          </p>
+
+          <div class="hero-ctas animate-on-scroll delay-3">
+            <button class="btn btn-primary btn-lg" onclick="navigateTo('courses')">
+              <i class="fa-solid fa-compass"></i> Explore Courses
+            </button>
+            <button class="btn btn-cyan btn-lg" onclick="navigateTo('login')">
+              <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In to Portal
+            </button>
+            <button class="btn btn-secondary btn-lg" onclick="navigateTo('architecture')">
+              <i class="fa-solid fa-server"></i> View Architecture
+            </button>
+          </div>
+
+          <!-- Quick 1-Click Academic Portal Launchers -->
+          <div class="hero-portal-launchers animate-on-scroll delay-3">
+            <div class="launchers-label"><i class="fa-solid fa-bolt text-cyan"></i> Instant 1-Click Academic Portals:</div>
+            <div class="portal-quick-badges">
+              <button class="quick-portal-btn btn-student" onclick="openPortal('student')" title="Open Student Academic Dashboard">
+                <i class="fa-solid fa-user-graduate" style="color: var(--ibm-blue-60);"></i> Student Portal
+              </button>
+              <button class="quick-portal-btn btn-faculty" onclick="openPortal('faculty')" title="Open Faculty Management Portal">
+                <i class="fa-solid fa-chalkboard-user" style="color: var(--accent-cyan);"></i> Faculty Portal
+              </button>
+              <button class="quick-portal-btn btn-parent" onclick="openPortal('parent')" title="Open Parent Monitoring Portal">
+                <i class="fa-solid fa-hands-holding-child" style="color: var(--ibm-teal-40);"></i> Parent Portal
+              </button>
+              <button class="quick-portal-btn btn-admin" onclick="openPortal('admin')" title="Open Administrator Telemetry Hub">
+                <i class="fa-solid fa-server" style="color: #a56eff;"></i> Admin & Cluster
+              </button>
+            </div>
+          </div>
+
+          <!-- Animated Numeric Counters -->
+          <div class="hero-stats-row animate-on-scroll delay-4">
+            <div class="hero-stat-card">
+              <div class="stat-number"><span class="counter" data-target="5000">0</span><span class="stat-number-accent">+</span></div>
+              <div class="stat-label">Active Students</div>
+            </div>
+            <div class="hero-stat-card">
+              <div class="stat-number"><span class="counter" data-target="250">0</span><span class="stat-number-accent">+</span></div>
+              <div class="stat-label">Faculty Staff</div>
+            </div>
+            <div class="hero-stat-card">
+              <div class="stat-number"><span class="counter" data-target="50">0</span><span class="stat-number-accent">+</span></div>
+              <div class="stat-label">Accredited Courses</div>
+            </div>
+            <div class="hero-stat-card">
+              <div class="stat-number"><span class="counter" data-target="100">0</span><span class="stat-number-accent">+</span></div>
+              <div class="stat-label">Annual Events</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hero Right Column: Interactive 3-Tier Container Topology Showcase -->
+        <div class="topology-card animate-on-scroll delay-2">
+          <div class="topology-header">
+            <div class="topology-title">
+              <i class="fa-solid fa-network-wired text-primary"></i>
+              <span>Live Container Topology</span>
+            </div>
+            <span class="topology-engine-badge" id="heroNetworkBadge">net: college-net</span>
+          </div>
+
+          <div class="topology-flow">
+            <!-- Tier 1: Frontend Container -->
+            <div class="topology-tier tier-frontend" id="tierFrontendCard">
+              <div class="tier-info">
+                <div class="tier-icon"><i class="fa-brands fa-html5"></i></div>
+                <div>
+                  <div class="tier-name">Frontend Web Service</div>
+                  <div class="tier-meta">Port 3000:80 • Nginx Alpine</div>
+                </div>
+              </div>
+              <div class="tier-status status-running" id="statusFrontend">
+                <i class="fa-solid fa-circle-check"></i> <span>Running</span>
+              </div>
+            </div>
+
+            <div class="topology-connector">
+              <i class="fa-solid fa-arrow-down"></i>
+            </div>
+
+            <!-- Tier 2: Backend Container -->
+            <div class="topology-tier tier-backend" id="tierBackendCard">
+              <div class="tier-info">
+                <div class="tier-icon"><i class="fa-brands fa-node-js"></i></div>
+                <div>
+                  <div class="tier-name">Backend REST API</div>
+                  <div class="tier-meta">Port 5000:5000 • Express Microservice</div>
+                </div>
+              </div>
+              <div class="tier-status status-running" id="statusBackend">
+                <i class="fa-solid fa-circle-check"></i> <span>Running</span>
+              </div>
+            </div>
+
+            <div class="topology-connector">
+              <i class="fa-solid fa-arrow-down"></i>
+            </div>
+
+            <!-- Tier 3: Database Container -->
+            <div class="topology-tier tier-database" id="tierDatabaseCard">
+              <div class="tier-info">
+                <div class="tier-icon"><i class="fa-solid fa-database"></i></div>
+                <div>
+                  <div class="tier-name">Database Service</div>
+                  <div class="tier-meta">Port 5432:5432 • PostgreSQL 16</div>
+                </div>
+              </div>
+              <div class="tier-status status-running" id="statusDatabase">
+                <i class="fa-solid fa-link"></i> <span>Connected</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="topology-actions">
+            <div style="font-size: 0.8rem; color: var(--text-muted);">
+              <i class="fa-solid fa-heart-pulse"></i> Auto-Probe: <span id="probeTime">Active</span>
+            </div>
+            <button class="topology-probe-btn" onclick="pingContainerHealth()">
+              <i class="fa-solid fa-rotate"></i> Ping Health Checks
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTAINERIZATION PILLARS SECTION -->
+    <section class="section" id="about">
+      <div class="container">
+        <div class="section-header animate-on-scroll">
+          <span class="section-tag">Academic Architecture</span>
+          <h2 class="section-title">Why Containerize a College Portal?</h2>
+          <p class="section-subtitle">
+            Containerizing higher-education systems resolves concurrency spikes during exam results, 
+            eliminates configuration drift, and enforces zero-trust security between academic tiers.
+          </p>
+        </div>
+
+        <div class="features-grid">
+          <div class="feature-card animate-on-scroll delay-1">
+            <div class="feature-icon-box"><i class="fa-solid fa-box-open"></i></div>
+            <h3 class="feature-title">Universal Portability</h3>
+            <p class="feature-text">
+              Eliminates "works on my machine" hurdles. The identical OCI container images run seamlessly across 
+              local developer workstations, test environments, and IBM Cloud clusters.
+            </p>
+          </div>
+
+          <div class="feature-card animate-on-scroll delay-2">
+            <div class="feature-icon-box"><i class="fa-solid fa-shield-halved"></i></div>
+            <h3 class="feature-title">Microservice Isolation</h3>
+            <p class="feature-text">
+              Frontend web servers, Express application logic, and PostgreSQL database storage run in strict 
+              isolated namespaces, preventing cascading crashes and safeguarding student records.
+            </p>
+          </div>
+
+          <div class="feature-card animate-on-scroll delay-3">
+            <div class="feature-icon-box"><i class="fa-solid fa-arrow-trend-up"></i></div>
+            <h3 class="feature-title">Elastic Scalability</h3>
+            <p class="feature-text">
+              Easily scale backend replicas with <code>docker compose up --scale backend=3</code> during high-load 
+              events such as course registrations or semester grade declarations.
+            </p>
+          </div>
+
+          <div class="feature-card animate-on-scroll delay-4">
+            <div class="feature-icon-box"><i class="fa-solid fa-code-merge"></i></div>
+            <h3 class="feature-title">DevSecOps & Fast CI/CD</h3>
+            <p class="feature-text">
+              Enables zero-downtime rolling deployments, automated healthchecks, image vulnerability scanning, 
+              and single-command teardown or spin-up using Docker Compose.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ARCHITECTURE DIAGRAM SECTION -->
+    <section class="section" id="architecture" style="background: var(--bg-tertiary);">
+      <div class="container">
+        <div class="section-header animate-on-scroll">
+          <span class="section-tag">System Topology</span>
+          <h2 class="section-title">End-to-End Container Pipeline</h2>
+          <p class="section-subtitle">
+            A secure 3-tier structure orchestrated via <code>docker-compose.yml</code> on a private bridge network.
+          </p>
+        </div>
+
+        <div class="arch-diagram-wrapper animate-on-scroll">
+          <div class="arch-flow-row">
+            <div class="arch-block">
+              <div class="arch-block-icon"><i class="fa-solid fa-users"></i></div>
+              <div class="arch-block-title">End Users</div>
+              <span class="arch-block-badge">Clients</span>
+              <div class="arch-block-desc">Students, Faculty & Administrators connecting via HTTPS browsers.</div>
+            </div>
+
+            <div class="arch-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+
+            <div class="arch-block">
+              <div class="arch-block-icon"><i class="fa-brands fa-docker"></i></div>
+              <div class="arch-block-title">Frontend Service</div>
+              <span class="arch-block-badge">Nginx Container :3000</span>
+              <div class="arch-block-desc">Serves responsive static assets and reverse-proxies /api/ requests.</div>
+            </div>
+
+            <div class="arch-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+
+            <div class="arch-block">
+              <div class="arch-block-icon"><i class="fa-solid fa-server"></i></div>
+              <div class="arch-block-title">Backend API Service</div>
+              <span class="arch-block-badge">Node.js Express :5000</span>
+              <div class="arch-block-desc">Handles role-based auth, business logic, and healthcheck telemetry.</div>
+            </div>
+
+            <div class="arch-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+
+            <div class="arch-block">
+              <div class="arch-block-icon"><i class="fa-solid fa-database"></i></div>
+              <div class="arch-block-title">Database Service</div>
+              <span class="arch-block-badge">PostgreSQL 16 :5432</span>
+              <div class="arch-block-desc">Stores transactional academic data on persistent Docker volume.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COURSES SECTION -->
+    <section class="section" id="courses">
+      <div class="container">
+        <div class="section-header animate-on-scroll">
+          <span class="section-tag">Academic Curriculum</span>
+          <h2 class="section-title">Explore University Courses</h2>
+          <p class="section-subtitle">
+            Industry-aligned curriculum featuring Cloud Native Computing, DevOps, AI, and Advanced Databases.
+          </p>
+        </div>
+
+        <div class="courses-filter animate-on-scroll">
+          <button class="filter-btn active" data-filter="all">All Disciplines</button>
+          <button class="filter-btn" data-filter="Computer Science">Computer Science</button>
+          <button class="filter-btn" data-filter="AI & Data Science">AI & Data Science</button>
+          <button class="filter-btn" data-filter="Cloud">Cloud & DevOps</button>
+        </div>
+
+        <div class="courses-grid" id="coursesGrid">
+          <!-- Loaded dynamically via JavaScript -->
+        </div>
+      </div>
+    </section>
+
+    <!-- EVENTS SECTION -->
+    <section class="section" id="events" style="background: var(--bg-tertiary);">
+      <div class="container">
+        <div class="section-header animate-on-scroll">
+          <span class="section-tag">Campus Life</span>
+          <h2 class="section-title">Upcoming College Events</h2>
+          <p class="section-subtitle">
+            Join competitive hackathons, technical symposiums, and IBM campus placement drives.
+          </p>
+        </div>
+
+        <div class="events-grid" id="eventsGrid">
+          <!-- Loaded dynamically via JavaScript -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ANNOUNCEMENTS SECTION -->
+    <section class="section" id="announcements">
+      <div class="container">
+        <div class="section-header animate-on-scroll">
+          <span class="section-tag">Notice Board</span>
+          <h2 class="section-title">Campus Announcements</h2>
+          <p class="section-subtitle">
+            Real-time updates regarding examinations, holidays, academic policies, and placement notifications.
+          </p>
+        </div>
+
+        <div class="announcements-container">
+          <div class="ann-tabs animate-on-scroll">
+            <button class="ann-tab-btn active" data-category="all">All Notices</button>
+            <button class="ann-tab-btn" data-category="Exams">Exams</button>
+            <button class="ann-tab-btn" data-category="Placement">Placement</button>
+            <button class="ann-tab-btn" data-category="Holidays">Holidays</button>
+            <button class="ann-tab-btn" data-category="Academic">Academic</button>
+          </div>
+
+          <div class="announcements-list" id="announcementsList">
+            <!-- Loaded dynamically via JavaScript -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT SECTION -->
+    <section class="section" id="contact" style="background: var(--bg-secondary);">
+      <div class="container">
+        <div class="section-header animate-on-scroll">
+          <span class="section-tag">Get In Touch</span>
+          <h2 class="section-title">Campus Assistance & Inquiries</h2>
+          <p class="section-subtitle">Have questions regarding admissions, containerized lab access, or technical support?</p>
+        </div>
+
+        <div class="contact-grid">
+          <div class="contact-info-card animate-on-scroll delay-1">
+            <h3 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 1.5rem;">Academic Headquarters</h3>
+            
+            <div class="contact-item">
+              <div class="contact-icon"><i class="fa-solid fa-location-dot"></i></div>
+              <div>
+                <div class="contact-label">Campus Location</div>
+                <div class="contact-value">IBM Center of Excellence, Apex Institute Campus, Tech Boulevard, Sector 62</div>
+              </div>
+            </div>
+
+            <div class="contact-item">
+              <div class="contact-icon"><i class="fa-solid fa-envelope"></i></div>
+              <div>
+                <div class="contact-label">Electronic Mail</div>
+                <div class="contact-value">portal-support@apex.edu • cloud-coe@ibm.apex.edu</div>
+              </div>
+            </div>
+
+            <div class="contact-item">
+              <div class="contact-icon"><i class="fa-solid fa-phone"></i></div>
+              <div>
+                <div class="contact-label">Telephone Helpline</div>
+                <div class="contact-value">+1 (800) 555-APEX / Ext. 402 (Mon - Fri, 9am - 5pm)</div>
+              </div>
+            </div>
+
+            <div class="contact-item">
+              <div class="contact-icon"><i class="fa-solid fa-server"></i></div>
+              <div>
+                <div class="contact-label">DevOps Status</div>
+                <div class="contact-value">Docker Compose v2.26+ • PostgreSQL 16 Subnet • Nginx Reverse Proxy</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="contact-form-card animate-on-scroll delay-2">
+            <h3 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 1.5rem;">Submit an Inquiry</h3>
+            <form id="inquiryForm" onsubmit="handleInquirySubmit(event)">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="inqName">Full Name</label>
+                  <input type="text" id="inqName" class="form-control" placeholder="e.g. Jordan Miller" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="inqEmail">Email Address</label>
+                  <input type="email" id="inqEmail" class="form-control" placeholder="jordan.m@domain.com" required>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="inqSubject">Subject / Query Topic</label>
+                <select id="inqSubject" class="form-control" required>
+                  <option value="">Choose a topic...</option>
+                  <option value="Admissions">Admissions & Enrollment</option>
+                  <option value="Container Labs">Container Lab & Cloud Access</option>
+                  <option value="Faculty Support">Faculty Support</option>
+                  <option value="Technical Issue">Technical / Bug Report</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="inqMessage">Message</label>
+                <textarea id="inqMessage" class="form-control" placeholder="Write your inquiry or feedback..." required></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
+                <i class="fa-solid fa-paper-plane"></i> Send Message
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-grid">
+          <div>
+            <div class="brand-logo" style="margin-bottom: 0.8rem; color: #fff;" onclick="navigateTo('home')">
+              <div class="brand-icon-wrapper"><i class="fa-solid fa-graduation-cap"></i></div>
+              <span class="brand-title">APEX UNIVERSITY</span>
+            </div>
+            <p class="footer-brand-p">
+              A high-performance containerized college portal demonstrating modern microservice architecture, 
+              isolated Docker services, and resilient academic management.
+            </p>
+            <div class="tech-badges">
+              <span class="tech-pill">Docker</span>
+              <span class="tech-pill">docker-compose</span>
+              <span class="tech-pill">Node.js Express</span>
+              <span class="tech-pill">PostgreSQL 16</span>
+              <span class="tech-pill">Nginx Alpine</span>
+            </div>
+          </div>
+
+          <div>
+            <h4 class="footer-heading">Academic Portals</h4>
+            <ul class="footer-links">
+              <li><a onclick="openPortal('student')" class="footer-link"><i class="fa-solid fa-user-graduate" style="color: var(--ibm-blue-60); margin-right: 5px;"></i> Student Portal</a></li>
+              <li><a onclick="openPortal('faculty')" class="footer-link"><i class="fa-solid fa-chalkboard-user" style="color: var(--accent-cyan); margin-right: 5px;"></i> Faculty Portal</a></li>
+              <li><a onclick="openPortal('parent')" class="footer-link"><i class="fa-solid fa-hands-holding-child" style="color: var(--ibm-teal-40); margin-right: 5px;"></i> Parent Portal</a></li>
+              <li><a onclick="openPortal('admin')" class="footer-link"><i class="fa-solid fa-server" style="color: #a56eff; margin-right: 5px;"></i> Admin Telemetry</a></li>
+              <li><a onclick="navigateTo('login')" class="footer-link"><i class="fa-solid fa-key" style="margin-right: 5px;"></i> Sign In with Credentials</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 class="footer-heading">Architecture</h4>
+            <ul class="footer-links">
+              <li><a onclick="navigateTo('architecture')" class="footer-link">Frontend Container</a></li>
+              <li><a onclick="navigateTo('architecture')" class="footer-link">Backend API Container</a></li>
+              <li><a onclick="navigateTo('architecture')" class="footer-link">Database Container</a></li>
+              <li><a onclick="navigateToClusterStatus()" class="footer-link">Live Health Check</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 class="footer-heading">Academic Access</h4>
+            <p style="color: #a4b3ca; font-size: 0.88rem; line-height: 1.6; margin-bottom: 1rem;">
+              Dedicated role-based portals for students, faculty members, and system administrators.
+            </p>
+            <button class="btn btn-outline btn-sm" onclick="navigateTo('login')" style="color: #fff; border-color: rgba(255,255,255,0.2);">
+              <i class="fa-solid fa-lock"></i> Go to Sign In
+            </button>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <div>© 2026 Apex Institute of Technology • IBM Academic Project Submission. All rights reserved.</div>
+          <div style="font-family: var(--font-mono); font-size: 0.78rem;">Status: Tier 3 Docker Mesh • Port 3000 / 5000 / 5432</div>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- =================================================================
+       PAGE VIEW 2: DEDICATED LOGIN PAGE (NO QUICK LOGIN)
+       ================================================================= -->
+  <section id="loginView" class="page-view">
+    <div class="auth-page-wrapper">
+      <div class="auth-card-box">
+        <button class="auth-back-btn" onclick="navigateTo('home')">
+          <i class="fa-solid fa-arrow-left"></i> Return to University Portal
+        </button>
+
+        <div class="auth-card-header">
+          <div class="auth-brand-badge">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <h2 class="auth-card-title">Sign In to Apex Portal</h2>
+          <p class="auth-card-subtitle">Select your academic role and enter your portal credentials.</p>
+        </div>
+
+        <!-- Role Selector Segmented Tabs -->
+        <div class="auth-role-segmented">
+          <button type="button" class="role-segment-btn active" id="roleBtnStudent" onclick="selectLoginRole('student')">
+            <i class="fa-solid fa-user-graduate"></i>
+            <span>Student</span>
+          </button>
+          <button type="button" class="role-segment-btn" id="roleBtnFaculty" onclick="selectLoginRole('faculty')">
+            <i class="fa-solid fa-chalkboard-user"></i>
+            <span>Faculty</span>
+          </button>
+          <button type="button" class="role-segment-btn" id="roleBtnParent" onclick="selectLoginRole('parent')">
+            <i class="fa-solid fa-hands-holding-child"></i>
+            <span>Parent</span>
+          </button>
+          <button type="button" class="role-segment-btn" id="roleBtnAdmin" onclick="selectLoginRole('admin')">
+            <i class="fa-solid fa-user-shield"></i>
+            <span>Admin</span>
+          </button>
+        </div>
+
+        <!-- Dynamic Role Description Banner -->
+        <div class="role-role-desc" id="roleDescBanner">
+          <i class="fa-solid fa-info-circle"></i>
+          <span id="roleDescText">Access student attendance, course grades, timetable, and assignment submissions.</span>
+        </div>
+
+        <!-- Dedicated Login Form -->
+        <form id="dedicatedLoginForm" onsubmit="handleDedicatedLoginSubmit(event)">
+          <!-- Hidden input for current role -->
+          <input type="hidden" id="loginActiveRole" value="student">
+
+          <!-- Dynamic Student Selector -->
+          <div class="form-group" id="studentPickerGroup">
+            <label class="form-label" for="loginStudentSelect"><i class="fa-solid fa-user-graduate text-primary"></i> Select Student Account</label>
+            <select id="loginStudentSelect" class="form-control" onchange="onLoginStudentSelect(this.value)">
+              <option value="alex.chen@apex.edu">Alex Chen (Roll: APX-2022-CS-084) • CSE • CGPA: 8.92 (High Performer)</option>
+              <option value="sophia.m@apex.edu">Sophia Martinez (Roll: APX-2022-CS-091) • CSE • CGPA: 9.35 (Top Rank)</option>
+              <option value="marcus.v@apex.edu">Marcus Vance (Roll: APX-2022-CS-112) • CSE • Attendance: 64.5% (At Risk 🔴)</option>
+              <option value="daniel.c@apex.edu">Daniel Craig (Roll: APX-2022-CS-118) • CSE • Internal: 12/30 (At Risk 🔴)</option>
+              <option value="david.k@apex.edu">David Kim (Roll: APX-2022-CS-104) • AI & Data Science • CGPA: 8.41</option>
+              <option value="aisha.p@apex.edu">Aisha Patel (Roll: APX-2023-CS-022) • CSE (Sem 4) • CGPA: 8.78</option>
+              <option value="lucas.s@apex.edu">Lucas Silva (Roll: APX-2022-ECE-044) • ECE • CGPA: 7.65</option>
+              <option value="maya.l@apex.edu">Maya Lin (Roll: APX-2022-CS-125) • CSE • Pending Assignments (Medium Risk 🟡)</option>
+              <option value="rohan.g@apex.edu">Rohan Gupta (Roll: APX-2022-CS-130) • AI • Low Placement Readiness</option>
+              <option value="priya.n@apex.edu">Priya Nair (Roll: APX-2022-CS-135) • CSE • CGPA: 8.10</option>
+            </select>
+          </div>
+
+          <!-- Dynamic Faculty Selector -->
+          <div class="form-group" id="facultyPickerGroup" style="display: none;">
+            <label class="form-label" for="loginFacultySelect"><i class="fa-solid fa-chalkboard-user text-primary"></i> Select Faculty Account</label>
+            <select id="loginFacultySelect" class="form-control" onchange="onLoginFacultySelect(this.value)">
+              <option value="robert.vance@apex.edu">Dr. Robert Vance • Professor & Cloud Lead (CS601, CS604)</option>
+              <option value="anita.s@apex.edu">Prof. Anita Sharma • Associate Professor (CS602 Web)</option>
+              <option value="kenneth.c@apex.edu">Dr. Kenneth Cole • Assistant Professor (CS603 Databases)</option>
+              <option value="sarah.c@apex.edu">Dr. Sarah Connor • Associate Professor (CS605 AI)</option>
+              <option value="rajesh.i@apex.edu">Dr. Rajesh Iyer • Assistant Professor (CS607 DevOps)</option>
+            </select>
+          </div>
+
+          <!-- Dynamic Parent Selector -->
+          <div class="form-group" id="parentPickerGroup" style="display: none;">
+            <label class="form-label" for="loginParentSelect"><i class="fa-solid fa-hands-holding-child text-primary"></i> Select Parent Account</label>
+            <select id="loginParentSelect" class="form-control" onchange="onLoginParentSelect(this.value)">
+              <option value="robert.chen.parent@gmail.com">Robert Chen Sr. (Father of Alex Chen • CS-084)</option>
+              <option value="george.vance.parent@gmail.com">George Vance (Father of Marcus Vance • CS-112 • Low Attendance Alert ⚠️)</option>
+              <option value="arthur.c.parent@gmail.com">Arthur Craig (Father of Daniel Craig • CS-118 • Academic Alert ⚠️)</option>
+              <option value="wei.lin.parent@gmail.com">Wei Lin (Mother of Maya Lin • CS-125)</option>
+              <option value="carmen.m.parent@gmail.com">Carmen Martinez (Mother of Sophia Martinez • CS-091)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="loginEmail">Username or Academic Email</label>
+            <input type="text" id="loginEmail" class="form-control" placeholder="Enter username or email" value="alex.chen@apex.edu" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="loginPass">Password</label>
+            <div class="input-toggle-wrap">
+              <input type="password" id="loginPass" class="form-control" placeholder="Enter your password" value="password123" required>
+              <button type="button" class="toggle-pwd-btn" onclick="togglePasswordVisibility('loginPass', this)">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+            </div>
+            <!-- Validation Message Box -->
+            <div id="loginErrorMsg" style="color: var(--status-danger); font-size: 0.85rem; margin-top: 0.4rem; display: none;"></div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-lg" style="width: 100%; margin-top: 0.8rem;" id="loginSubmitBtn">
+            <i class="fa-solid fa-right-to-bracket"></i> Sign In to Dashboard
+          </button>
+        </form>
+
+        <!-- Evaluation Credentials Guidance (Click any to instantly sign in) -->
+        <div class="credentials-hint-box">
+          <div class="credentials-hint-title">
+            <i class="fa-solid fa-key text-primary"></i> 1-Click Instant Portal Access (Evaluation Demo):
+          </div>
+          <div class="credentials-hint-list" style="margin-top: 0.5rem;">
+            <button type="button" class="credentials-hint-btn" onclick="openPortal('student')" title="Sign in as Student Alex Chen">
+              <span><i class="fa-solid fa-user-graduate" style="color: var(--ibm-blue-60); margin-right: 6px;"></i> <strong>Student Portal</strong></span>
+              <span style="color: var(--text-muted); font-size: 0.78rem;">student / password123 →</span>
+            </button>
+            <button type="button" class="credentials-hint-btn" onclick="openPortal('faculty')" title="Sign in as Professor Dr. Robert Vance">
+              <span><i class="fa-solid fa-chalkboard-user" style="color: var(--accent-cyan); margin-right: 6px;"></i> <strong>Faculty Portal</strong></span>
+              <span style="color: var(--text-muted); font-size: 0.78rem;">faculty / password123 →</span>
+            </button>
+            <button type="button" class="credentials-hint-btn" onclick="openPortal('parent')" title="Sign in as Parent Robert Chen Sr.">
+              <span><i class="fa-solid fa-hands-holding-child" style="color: var(--ibm-teal-40); margin-right: 6px;"></i> <strong>Parent Portal</strong></span>
+              <span style="color: var(--text-muted); font-size: 0.78rem;">parent / password123 →</span>
+            </button>
+            <button type="button" class="credentials-hint-btn" onclick="openPortal('admin')" title="Sign in as Chief Administrator & Dean">
+              <span><i class="fa-solid fa-server" style="color: #a56eff; margin-right: 6px;"></i> <strong>Admin Hub</strong></span>
+              <span style="color: var(--text-muted); font-size: 0.78rem;">admin / password123 →</span>
+            </button>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 1.6rem; font-size: 0.92rem; color: var(--text-secondary);">
+          Don't have an account? 
+          <a href="javascript:void(0)" onclick="navigateTo('register')" style="font-weight: 700;">Register here</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================================================================
+       PAGE VIEW 3: DEDICATED REGISTRATION PAGE
+       ================================================================= -->
+  <section id="registerView" class="page-view">
+    <div class="auth-page-wrapper">
+      <div class="auth-card-box">
+        <button class="auth-back-btn" onclick="navigateTo('login')">
+          <i class="fa-solid fa-arrow-left"></i> Back to Sign In
+        </button>
+
+        <div class="auth-card-header">
+          <div class="auth-brand-badge" style="background: linear-gradient(135deg, var(--ibm-cyan-40), var(--ibm-blue-60));">
+            <i class="fa-solid fa-user-plus"></i>
+          </div>
+          <h2 class="auth-card-title">Create Academic Account</h2>
+          <p class="auth-card-subtitle">Register for student or faculty portal credentials.</p>
+        </div>
+
+        <form id="dedicatedRegisterForm" onsubmit="handleDedicatedRegisterSubmit(event)">
+          <div class="form-group">
+            <label class="form-label" for="regFullname">Full Legal Name</label>
+            <input type="text" id="regFullname" class="form-control" placeholder="e.g. Mia Robinson" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="regEmailAddr">Academic Email Address</label>
+            <input type="email" id="regEmailAddr" class="form-control" placeholder="e.g. mia.r@apex.edu" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="regRoleChoice">Account Role</label>
+              <select id="regRoleChoice" class="form-control" required>
+                <option value="student">Student</option>
+                <option value="faculty">Faculty Member</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="regDeptChoice">Department</label>
+              <select id="regDeptChoice" class="form-control" required>
+                <option value="Computer Science & Cloud Computing">Computer Science & Cloud</option>
+                <option value="AI & Data Science">AI & Data Science</option>
+                <option value="Electronics & Communication">Electronics</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="regPass1">Password</label>
+              <div class="input-toggle-wrap">
+                <input type="password" id="regPass1" class="form-control" placeholder="Minimum 6 characters" required>
+                <button type="button" class="toggle-pwd-btn" onclick="togglePasswordVisibility('regPass1', this)">
+                  <i class="fa-solid fa-eye"></i>
+                </button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="regPass2">Confirm Password</label>
+              <div class="input-toggle-wrap">
+                <input type="password" id="regPass2" class="form-control" placeholder="Re-enter password" required>
+                <button type="button" class="toggle-pwd-btn" onclick="togglePasswordVisibility('regPass2', this)">
+                  <i class="fa-solid fa-eye"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div id="registerErrorMsg" style="color: var(--status-danger); font-size: 0.85rem; margin-bottom: 0.8rem; display: none;"></div>
+
+          <button type="submit" class="btn btn-cyan btn-lg" style="width: 100%;">
+            <i class="fa-solid fa-check"></i> Complete Account Registration
+          </button>
+        </form>
+
+        <div style="text-align: center; margin-top: 1.6rem; font-size: 0.92rem; color: var(--text-secondary);">
+          Already have an account? 
+          <a href="javascript:void(0)" onclick="navigateTo('login')" style="font-weight: 700;">Sign In</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================================================================
+       PAGE VIEW 4: DEDICATED ROLE DASHBOARDS VIEW
+       ================================================================= -->
+  <section id="dashboardView" class="page-view">
+    <div class="dashboard-view-container">
+      <!-- Universal Quick Portal Switcher Header Bar -->
+      <div class="dash-portal-switcher-header">
+        <div class="dash-portal-switcher-inner">
+          <div class="portal-brand-mini">
+            <i class="fa-solid fa-graduation-cap text-primary"></i>
+            <span>University Portals:</span>
+          </div>
+          <div class="portal-switcher-pills">
+            <button type="button" class="portal-pill-btn active" id="portalPillStudent" onclick="openPortal('student')" title="Switch to Student Academic Portal">
+              <i class="fa-solid fa-user-graduate" style="color: var(--ibm-blue-60);"></i>
+              <span>Student Portal</span>
+            </button>
+            <button type="button" class="portal-pill-btn" id="portalPillFaculty" onclick="openPortal('faculty')" title="Switch to Faculty Portal">
+              <i class="fa-solid fa-chalkboard-user" style="color: var(--accent-cyan);"></i>
+              <span>Faculty Portal</span>
+            </button>
+            <button type="button" class="portal-pill-btn" id="portalPillParent" onclick="openPortal('parent')" title="Switch to Parent Portal">
+              <i class="fa-solid fa-hands-holding-child" style="color: var(--ibm-teal-40);"></i>
+              <span>Parent Portal</span>
+            </button>
+            <button type="button" class="portal-pill-btn" id="portalPillAdmin" onclick="openPortal('admin')" title="Switch to Admin & Live Telemetry Hub">
+              <i class="fa-solid fa-server" style="color: #a56eff;"></i>
+              <span>Admin & Telemetry</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-layout">
+        <!-- Dashboard Sidebar -->
+        <aside class="dash-sidebar">
+          <div>
+            <!-- Current User Profile Card -->
+            <div class="dash-user-card">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80" alt="Avatar" class="dash-avatar" id="dashAvatar">
+              <div class="dash-user-meta">
+                <span class="dash-user-name" id="dashUserName">Alex Chen</span>
+                <span class="dash-user-role" id="dashUserRole">Student</span>
+              </div>
+            </div>
+
+            <!-- Profile Switcher Box (Change Student or Faculty) -->
+            <div class="dash-switcher-box" id="dashSwitcherBox" style="margin-bottom: 1.2rem; padding: 0.85rem; background: var(--bg-tertiary); border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+              <label style="font-size: 0.76rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 0.4rem;" id="dashSwitcherLabel">
+                <i class="fa-solid fa-arrows-rotate text-primary"></i> Change Active Profile:
+              </label>
+              <select id="dashProfileSelect" class="form-control" style="font-size: 0.85rem; padding: 0.4rem 0.6rem; font-weight: 600;" onchange="handleDashProfileChange(this.value)">
+                <!-- Populated dynamically based on role -->
+              </select>
+            </div>
+
+            <!-- Dynamic Role Navigation Menu -->
+            <ul class="dash-nav-menu" id="dashNavMenu">
+              <!-- Populated dynamically based on active role -->
+            </ul>
+          </div>
+
+          <!-- Sidebar Bottom Actions -->
+          <div class="dash-sidebar-bottom">
+            <button class="btn btn-outline btn-sm" onclick="navigateTo('home')">
+              <i class="fa-solid fa-globe"></i> Campus Home Portal
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="handleLogout()" style="color: var(--status-danger);">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
+            </button>
+          </div>
+        </aside>
+
+        <!-- Dashboard Main Stage -->
+        <main class="dash-main" id="dashMainContent">
+          <!-- Rendered dynamically by current active role & active tab pane -->
+        </main>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================================================================
+       ACTION MODALS (ADD STUDENT, ANNOUNCEMENT, ASSIGNMENT)
+       ================================================================= -->
+
+  <!-- Add Student Modal (Admin) -->
+  <div class="modal-overlay" id="addStudentModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title">Enroll New Student</div>
+        <button class="modal-close-btn" onclick="closeModal('addStudentModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="addStudentForm" onsubmit="handleAddStudentSubmit(event)">
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" id="newStdName" class="form-control" placeholder="e.g. Liam Parker" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <input type="email" id="newStdEmail" class="form-control" placeholder="liam.p@apex.edu" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Roll Number</label>
+              <input type="text" id="newStdRoll" class="form-control" placeholder="APX-2024-CS-099" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Department</label>
+              <select id="newStdDept" class="form-control" required>
+                <option value="Computer Science & Cloud Computing">Computer Science & Cloud</option>
+                <option value="Artificial Intelligence & Data Science">AI & Data Science</option>
+                <option value="Electronics & Communication">Electronics & Comm.</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Semester</label>
+              <input type="number" id="newStdSem" class="form-control" value="6" min="1" max="8" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Initial CGPA</label>
+            <input type="number" step="0.01" id="newStdCgpa" class="form-control" value="8.50" min="0" max="10" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
+            <i class="fa-solid fa-check"></i> Register Student Record
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Student Modal (Faculty & Admin) -->
+  <div class="modal-overlay" id="editStudentModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title"><i class="fa-solid fa-pen-to-square"></i> Edit Student Record</div>
+        <button class="modal-close-btn" onclick="closeModal('editStudentModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="editStudentForm" onsubmit="saveEditStudent(event)">
+          <input type="hidden" id="editStdId">
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" id="editStdName" class="form-control" placeholder="e.g. Liam Parker" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <input type="email" id="editStdEmail" class="form-control" placeholder="liam.p@apex.edu" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Roll Number</label>
+              <input type="text" id="editStdRoll" class="form-control" placeholder="APX-2024-CS-099" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Department</label>
+              <select id="editStdDept" class="form-control" required>
+                <option value="Computer Science & Cloud Computing">Computer Science & Cloud</option>
+                <option value="Artificial Intelligence & Data Science">AI & Data Science</option>
+                <option value="Electronics & Communication">Electronics & Comm.</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Semester</label>
+              <input type="number" id="editStdSem" class="form-control" value="6" min="1" max="8" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">CGPA</label>
+            <input type="number" step="0.01" id="editStdCgpa" class="form-control" value="8.50" min="0" max="10" required>
+          </div>
+          <div style="display:flex; gap:0.8rem; margin-top:0.5rem;">
+            <button type="button" class="btn btn-secondary btn-lg" style="flex:1;" onclick="closeModal('editStudentModal')">
+              <i class="fa-solid fa-xmark"></i> Cancel
+            </button>
+            <button type="submit" class="btn btn-primary btn-lg" style="flex:2;">
+              <i class="fa-solid fa-floppy-disk"></i> Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Broadcast Announcement Modal (Admin / Faculty) -->
+  <div class="modal-overlay" id="announcementModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title">Broadcast University Notice</div>
+        <button class="modal-close-btn" onclick="closeModal('announcementModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="announcementForm" onsubmit="handleNewAnnouncementSubmit(event)">
+          <div class="form-group">
+            <label class="form-label">Notice Title</label>
+            <input type="text" id="annTitleInput" class="form-control" placeholder="e.g. Schedule for Cloud Lab Practicals" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Category</label>
+              <select id="annCategoryInput" class="form-control" required>
+                <option value="Academic">Academic</option>
+                <option value="Exams">Exams</option>
+                <option value="Placement">Placement</option>
+                <option value="Holidays">Holidays</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Priority Level</label>
+              <select id="annPriorityInput" class="form-control" required>
+                <option value="Normal">Normal</option>
+                <option value="Important">Important</option>
+                <option value="Urgent">Urgent</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Notice Content</label>
+            <textarea id="annContentInput" class="form-control" placeholder="Detailed announcement details..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
+            <i class="fa-solid fa-bullhorn"></i> Publish Announcement
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Upload Assignment Modal (Faculty) -->
+  <div class="modal-overlay" id="assignmentModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title">Upload New Course Assignment</div>
+        <button class="modal-close-btn" onclick="closeModal('assignmentModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="assignmentForm" onsubmit="handleNewAssignmentSubmit(event)">
+          <div class="form-group">
+            <label class="form-label">Course</label>
+            <select id="assignCourseSelect" class="form-control" required>
+              <option value="CS601">CS601 - Cloud Computing & Microservices</option>
+              <option value="CS602">CS602 - Full-Stack Web Architectures</option>
+              <option value="CS603">CS603 - Database Internals</option>
+              <option value="CS604">CS604 - Container Security</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Assignment Title</label>
+            <input type="text" id="assignTitle" class="form-control" placeholder="e.g. Lab 4: Kubernetes Pod Orchestration" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Submission Deadline</label>
+              <input type="date" id="assignDate" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Max Score</label>
+              <input type="number" id="assignScore" class="form-control" value="50" min="10" max="100" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Task Description</label>
+            <textarea id="assignDesc" class="form-control" placeholder="Detailed rubric, test instructions, and submission requirements..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Upload Assignment
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Apply Leave Modal (Student) -->
+  <div class="modal-overlay" id="applyLeaveModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title"><i class="fa-solid fa-calendar-plus text-primary"></i> Apply for Academic Leave</div>
+        <button class="modal-close-btn" onclick="closeModal('applyLeaveModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="applyLeaveForm" onsubmit="handleApplyLeaveSubmit(event)">
+          <div class="form-group">
+            <label class="form-label">Leave Category</label>
+            <select id="leaveTypeSelect" class="form-control" required>
+              <option value="Academic Event">Academic Event / Conference / Hackathon</option>
+              <option value="Medical">Medical / Health Absence</option>
+              <option value="Personal">Personal Emergency</option>
+              <option value="Family">Family Commitment</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">From Date</label>
+              <input type="date" id="leaveFromDate" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">To Date</label>
+              <input type="date" id="leaveToDate" class="form-control" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Detailed Justification / Purpose</label>
+            <textarea id="leaveReasonText" class="form-control" placeholder="Provide clear reason, affected classes, and event link/doctor prescription note..." required></textarea>
+          </div>
+          <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.8rem;">
+            <i class="fa-solid fa-bell text-primary"></i> Note: On approval or rejection, both you and your registered parent will receive instant portal alerts.
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
+            <i class="fa-solid fa-paper-plane"></i> Submit Leave Request
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Submit Helpdesk Ticket / Complaint Modal (Student) -->
+  <div class="modal-overlay" id="submitComplaintModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title"><i class="fa-solid fa-ticket text-primary"></i> Raise Support Ticket / Complaint</div>
+        <button class="modal-close-btn" onclick="closeModal('submitComplaintModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="submitComplaintForm" onsubmit="handleSubmitComplaint(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Department / Category</label>
+              <select id="complaintCategorySelect" class="form-control" required>
+                <option value="Academic">Academic & Attendance Roster</option>
+                <option value="Infrastructure">Infrastructure & Lab Facilities</option>
+                <option value="IT">IT, Docker & Cloud Workstations</option>
+                <option value="Library">Library & Digital Repository</option>
+                <option value="Hostel">Hostel & Campus Amenities</option>
+                <option value="Transport">Transport & Campus Shuttle</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Priority</label>
+              <select id="complaintPrioritySelect" class="form-control" required>
+                <option value="Normal">Normal</option>
+                <option value="High">High</option>
+                <option value="Urgent">Urgent</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Subject</label>
+            <input type="text" id="complaintSubject" class="form-control" placeholder="Brief summary of the issue..." required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Detailed Description</label>
+            <textarea id="complaintDesc" class="form-control" placeholder="Explain the problem, workstation number, date/time encountered..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
+            <i class="fa-solid fa-paper-plane"></i> Submit Ticket
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Request Official Certificate Modal (Student) -->
+  <div class="modal-overlay" id="requestCertificateModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title"><i class="fa-solid fa-file-contract text-primary"></i> Request Official Document</div>
+        <button class="modal-close-btn" onclick="closeModal('requestCertificateModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="requestCertificateForm" onsubmit="handleRequestCertificate(event)">
+          <div class="form-group">
+            <label class="form-label">Certificate Type</label>
+            <select id="certTypeSelect" class="form-control" required>
+              <option value="Bonafide Certificate">Bonafide Certificate</option>
+              <option value="Study Certificate">Study & Character Certificate</option>
+              <option value="Course Completion Certificate">Course Completion Certificate</option>
+              <option value="Fee Estimation Certificate">Fee Estimation & Subsidy Certificate</option>
+              <option value="Transfer Certificate">Transfer Certificate (TC)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Purpose of Request</label>
+            <textarea id="certPurposeText" class="form-control" placeholder="e.g. Visa application, educational bank loan subsidy, internship verification..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
+            <i class="fa-solid fa-stamp"></i> Submit Document Application
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Container Auto-Healing Simulator Modal (Admin) -->
+  <div class="modal-overlay" id="containerAutoHealModal">
+    <div class="modal-box" style="max-width: 650px;">
+      <div class="modal-header">
+        <div class="modal-title"><i class="fa-solid fa-heart-pulse text-danger"></i> Container Auto-Healing Simulator</div>
+        <button class="modal-close-btn" onclick="closeModal('containerAutoHealModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.2rem; line-height: 1.6;">
+          Safely test the platform's self-healing supervisor loop: 
+          <strong>Healthy $\to$ Unhealthy $\to$ Detection $\to$ Auto Recovery $\to$ Health Probe $\to$ Healthy</strong>.
+        </div>
+
+        <div class="heal-flow-diagram">
+          <div class="heal-flow-step active" id="healStep1">
+            <div class="heal-step-icon"><i class="fa-solid fa-check"></i></div>
+            <div class="heal-step-label">Healthy</div>
+          </div>
+          <div class="heal-flow-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+          <div class="heal-flow-step" id="healStep2">
+            <div class="heal-step-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            <div class="heal-step-label">Fault Detect</div>
+          </div>
+          <div class="heal-flow-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+          <div class="heal-flow-step" id="healStep3">
+            <div class="heal-step-icon"><i class="fa-solid fa-arrows-rotate"></i></div>
+            <div class="heal-step-label">Auto Recover</div>
+          </div>
+          <div class="heal-flow-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+          <div class="heal-flow-step" id="healStep4">
+            <div class="heal-step-icon"><i class="fa-solid fa-shield-halved"></i></div>
+            <div class="heal-step-label">Probe 200 OK</div>
+          </div>
+        </div>
+
+        <div class="heal-status-box" id="healStatusBox">
+          <div id="healStatusTitle" style="font-weight: 700; color: var(--status-success);">All Services Operating Reliably</div>
+          <div id="healStatusDesc" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.3rem;">Zero dropped requests. Sub-50ms API ping.</div>
+        </div>
+
+        <div style="display: flex; gap: 0.8rem; margin-top: 1.2rem;">
+          <button class="btn btn-danger btn-lg" style="flex: 1;" onclick="triggerSimulateFailure('backend')" id="btnSimulateFailBackend">
+            <i class="fa-solid fa-bolt"></i> Simulate Backend Failure
+          </button>
+          <button class="btn btn-outline btn-lg" onclick="triggerSimulateFailure('database')" id="btnSimulateFailDb">
+            <i class="fa-solid fa-database"></i> Fail DB
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Faculty Attendance Percentage Override Request Modal -->
+  <div class="modal-overlay" id="facultyOverrideModal">
+    <div class="modal-box" style="max-width: 560px;">
+      <div class="modal-header">
+        <div class="modal-title"><i class="fa-solid fa-key text-primary"></i> Request Attendance % Override</div>
+        <button class="modal-close-btn" onclick="closeModal('facultyOverrideModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 1.2rem; line-height: 1.5; background: rgba(15,98,254,0.08); padding: 0.8rem; border-radius: var(--radius-sm); border-left: 3px solid var(--accent-primary);">
+          Submit an attendance percentage override request to the <strong>Administrator</strong>. Once granted by Admin, the student's attendance percentage will update immediately and direct percentage setting will be unlocked for this faculty.
+        </div>
+        <form id="facultyOverrideForm" onsubmit="handleFacultyOverrideSubmit(event)">
+          <input type="hidden" id="overrideStudentId">
+          <input type="hidden" id="overrideCourseCode">
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-user-graduate text-primary"></i> Student</label>
+            <input type="text" id="overrideStudentName" class="form-control" readonly style="background: var(--bg-tertiary); font-weight: 700;">
+          </div>
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-book text-primary"></i> Subject / Course</label>
+            <input type="text" id="overrideCourseName" class="form-control" readonly style="background: var(--bg-tertiary); font-weight: 700;">
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label">Current Attendance %</label>
+              <input type="text" id="overrideCurrentPct" class="form-control" readonly style="background: var(--bg-tertiary); font-weight: 700; color: var(--text-primary);">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Requested New % <span style="color: var(--status-danger);">*</span></label>
+              <input type="number" id="overrideTargetPct" class="form-control" min="0" max="100" step="0.1" placeholder="e.g. 78.5" required style="font-weight: 700; border-color: var(--accent-primary);">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Justification / Reason <span style="color: var(--status-danger);">*</span></label>
+            <select id="overrideReasonSelect" class="form-control" onchange="onOverrideReasonChange(this.value)">
+              <option value="Approved Medical Certificate / Hospitalization Leave Adjustment">Approved Medical Certificate / Hospitalization Leave Adjustment</option>
+              <option value="Official Institutional Duty Leave (Hackathon / Technical Symposium)">Official Institutional Duty Leave (Hackathon / Technical Symposium)</option>
+              <option value="Lab Practicum Attendance Rectification">Lab Practicum Attendance Rectification</option>
+              <option value="Statutory Minimum 75% Waiver for Inter-University Representation">Statutory Minimum 75% Waiver for Inter-University Representation</option>
+              <option value="Other">Other (Custom Reason)</option>
+            </select>
+            <textarea id="overrideReasonCustom" class="form-control" style="margin-top: 0.6rem; display: none;" placeholder="Enter specific reason for Administrator review..."></textarea>
+          </div>
+          <div style="display: flex; gap: 0.8rem; margin-top: 1.4rem;">
+            <button type="button" class="btn btn-outline" style="flex: 1;" onclick="closeModal('facultyOverrideModal')">Cancel</button>
+            <button type="submit" class="btn btn-primary" style="flex: 1;"><i class="fa-solid fa-paper-plane"></i> Submit to Admin</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =================================================================
+       NOTIFICATION SLIDE-OVER DRAWER
+       ================================================================= -->
+  <div class="notif-drawer-overlay" id="notifDrawerOverlay" onclick="toggleNotificationDrawer(false)"></div>
+  <aside class="notif-drawer" id="notifDrawer">
+    <div class="notif-drawer-header">
+      <div class="notif-drawer-title">
+        <i class="fa-solid fa-bell text-primary"></i> Notifications Hub
+        <span class="badge badge-primary" id="notifDrawerCount" style="margin-left: 0.5rem; font-size: 0.75rem;">0</span>
+      </div>
+      <div style="display: flex; gap: 0.5rem; align-items: center;">
+        <button class="btn btn-outline btn-sm" onclick="markAllNotificationsRead()" title="Mark all read" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">
+          <i class="fa-solid fa-check-double"></i> Mark All Read
+        </button>
+        <button class="modal-close-btn" onclick="toggleNotificationDrawer(false)"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+    </div>
+    <!-- Notification Category Filter Pills -->
+    <div class="notif-filter-bar">
+      <button class="notif-filter-pill active" onclick="filterNotifications('all', this)">All</button>
+      <button class="notif-filter-pill" onclick="filterNotifications('Attendance', this)">Attendance</button>
+      <button class="notif-filter-pill" onclick="filterNotifications('Marks', this)">Marks</button>
+      <button class="notif-filter-pill" onclick="filterNotifications('Academic', this)">Academic</button>
+      <button class="notif-filter-pill" onclick="filterNotifications('Fees', this)">Fees</button>
+      <button class="notif-filter-pill" onclick="filterNotifications('Leave', this)">Leaves</button>
+    </div>
+    <div class="notif-drawer-body" id="notifListContainer">
+      <!-- Populated dynamically via app.js -->
+    </div>
+  </aside>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer"></div>
+
+  <!-- JavaScript Application Logic -->
+  <script src="js/app.js"></script>
+</body>
+</html>
