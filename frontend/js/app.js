@@ -1077,9 +1077,60 @@ function renderRoleDashboard(role, defaultTab) {
     `;
     renderAdminMainStage(activeTab);
   }
+
+  // Synchronize Mobile Horizontal Pill Strip
+  updateMobilePillStrip(menu, activeTab);
+}
+
+function updateMobilePillStrip(menuElement, activeTab) {
+  const strip = document.getElementById('dashMobilePillStrip');
+  const triggerLabel = document.getElementById('dashMobileCurrentTabName');
+  if (!strip || !menuElement) return;
+
+  const items = menuElement.querySelectorAll('.dash-nav-item');
+  let pillsHtml = '';
+  items.forEach(item => {
+    const tab = item.getAttribute('data-tab');
+    const label = item.textContent.trim();
+    const icon = item.querySelector('i')?.className || 'fa-solid fa-circle';
+    const isActive = (tab === activeTab);
+    if (isActive && triggerLabel) {
+      triggerLabel.textContent = label;
+    }
+    pillsHtml += `
+      <button type="button" class="dash-mobile-pill ${isActive ? 'active' : ''}" data-tab="${tab}" onclick="switchDashboardTab('${tab}')">
+        <i class="${icon}"></i> <span>${label}</span>
+      </button>
+    `;
+  });
+  strip.innerHTML = pillsHtml;
+}
+
+function toggleDashMobileSidebar() {
+  const sidebar = document.getElementById('dashSidebar');
+  const backdrop = document.getElementById('dashSidebarBackdrop');
+  if (!sidebar) return;
+  const isOpen = sidebar.classList.contains('mobile-open');
+  if (isOpen) {
+    closeDashMobileSidebar();
+  } else {
+    sidebar.classList.add('mobile-open');
+    if (backdrop) backdrop.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeDashMobileSidebar() {
+  const sidebar = document.getElementById('dashSidebar');
+  const backdrop = document.getElementById('dashSidebarBackdrop');
+  if (sidebar) sidebar.classList.remove('mobile-open');
+  if (backdrop) backdrop.classList.remove('active');
+  document.body.style.overflow = '';
 }
 
 function switchDashboardTab(tabId) {
+  closeDashMobileSidebar();
+
   let targetPane = document.getElementById(`pane_${tabId}`);
   let resolvedTabId = tabId;
 
@@ -1097,6 +1148,16 @@ function switchDashboardTab(tabId) {
     item.classList.remove('active');
     if (item.getAttribute('data-tab') === resolvedTabId) {
       item.classList.add('active');
+      const triggerLabel = document.getElementById('dashMobileCurrentTabName');
+      if (triggerLabel) triggerLabel.textContent = item.textContent.trim();
+    }
+  });
+
+  document.querySelectorAll('.dash-mobile-pill').forEach(pill => {
+    pill.classList.remove('active');
+    if (pill.getAttribute('data-tab') === resolvedTabId) {
+      pill.classList.add('active');
+      pill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
     }
   });
 

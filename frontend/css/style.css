@@ -2063,6 +2063,17 @@ textarea.form-control {
 .delay-3 { transition-delay: 0.3s; }
 .delay-4 { transition-delay: 0.4s; }
 
+/* Mobile Dashboard Navigation Defaults (Desktop) */
+.dash-mobile-nav-bar {
+  display: none;
+}
+.dash-sidebar-backdrop {
+  display: none;
+}
+.dash-sidebar-mobile-header {
+  display: none;
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .hero-grid { grid-template-columns: 1fr; gap: 2.5rem; text-align: center; }
@@ -2071,7 +2082,146 @@ textarea.form-control {
   .hero-ctas { justify-content: center; }
   .hero-stats-row { grid-template-columns: repeat(2, 1fr); }
   .dashboard-layout { grid-template-columns: 1fr; }
-  .dash-sidebar { display: none; }
+  
+  /* Mobile Dashboard Top Bar */
+  .dash-mobile-nav-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.65rem 1rem;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border-subtle);
+    position: sticky;
+    top: 56px;
+    z-index: 45;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .dash-mobile-nav-bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .dash-mobile-menu-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.48rem 0.85rem;
+    border-radius: var(--radius-full);
+    background: var(--accent-glow);
+    border: 1px solid var(--accent-primary);
+    color: var(--accent-primary);
+    font-weight: 700;
+    font-size: 0.82rem;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+  .dash-mobile-menu-trigger:hover {
+    background: var(--accent-primary);
+    color: #ffffff;
+  }
+
+  .dash-mobile-pill-strip {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    flex-grow: 1;
+    scrollbar-width: none;
+  }
+  .dash-mobile-pill-strip::-webkit-scrollbar {
+    display: none;
+  }
+
+  .dash-mobile-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.42rem 0.8rem;
+    border-radius: var(--radius-full);
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .dash-mobile-pill:hover, .dash-mobile-pill.active {
+    background: var(--accent-primary);
+    color: #ffffff;
+    border-color: var(--accent-primary);
+  }
+
+  /* Slide-over Mobile Drawer for Sidebar */
+  .dash-sidebar {
+    display: flex !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    width: 310px !important;
+    max-width: 86vw !important;
+    height: 100vh !important;
+    z-index: 1100 !important;
+    background: var(--bg-card) !important;
+    box-shadow: 10px 0 35px rgba(0, 0, 0, 0.6) !important;
+    overflow-y: auto !important;
+    padding: 1.25rem 1rem !important;
+    transform: translateX(-100%) !important;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+  }
+
+  .dash-sidebar.mobile-open {
+    transform: translateX(0) !important;
+  }
+
+  .dash-sidebar-mobile-header {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 0.85rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .dash-sidebar-close-btn {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+  }
+
+  .dash-sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
+    z-index: 1080;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .dash-sidebar-backdrop.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
   .telemetry-grid { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: repeat(2, 1fr); gap: 2rem; }
 }
