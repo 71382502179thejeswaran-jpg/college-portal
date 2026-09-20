@@ -1,5 +1,7 @@
 # Containerizing a College Portal
 
+[![Vercel Deployment](https://img.shields.io/badge/Vercel-Deployed%20Live-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://college-portal-self.vercel.app)
+[![Deployment Status](https://img.shields.io/badge/Deployment-Success%20100%25-success?style=for-the-badge)](https://college-portal-self.vercel.app)
 [![Docker](https://img.shields.io/badge/Docker-24.0+-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
 [![Docker Compose](https://img.shields.io/badge/Docker--Compose-v3.8-2496ED?logo=docker&logoColor=white)](https://docs.docker.com/compose/)
 [![Node.js](https://img.shields.io/badge/Node.js-20.x--24.x-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
@@ -8,24 +10,41 @@
 [![Nginx](https://img.shields.io/badge/Nginx-Alpine-009639?logo=nginx&logoColor=white)](https://nginx.org/)
 [![IBM](https://img.shields.io/badge/IBM-Academic%20Project-052FAD?logo=ibm&logoColor=white)](https://www.ibm.com/)
 
-> **Project Submission**: Modern, 3-tier, microservice-based academic management platform deployed and orchestrated with Docker containers.
+> 🚀 **Live Production Deployment**: **[https://college-portal-self.vercel.app](https://college-portal-self.vercel.app)**
+>
+> **Project Submission**: Modern, 3-tier, microservice-based academic management platform deployed and orchestrated with Docker containers and cloud-hosted on Vercel Edge.
 
 ---
 
 ## Table of Contents
-1. [Project Overview](#1-project-overview)
-2. [Key Benefits of Containerization](#2-key-benefits-of-containerization)
-3. [Technologies Used](#3-technologies-used)
-4. [System Architecture](#4-system-architecture)
-5. [Docker Architecture](#5-docker-architecture)
-6. [Project Directory Structure](#6-project-directory-structure)
-7. [How to Build Docker Images](#7-how-to-build-docker-images)
-8. [How to Run the Containers](#8-how-to-run-the-containers)
-9. [How to Access the Application](#9-how-to-access-the-application)
-10. [Local Development (Zero-Docker Standalone Mode)](#10-local-development-zero-docker-standalone-mode)
-11. [Role-Based Dashboard Features](#11-role-based-dashboard-features)
-12. [API Endpoints Documentation](#12-api-endpoints-documentation)
-13. [Future Enhancements](#13-future-enhancements)
+1. [Live Cloud Deployment (Vercel)](#1-live-cloud-deployment-vercel)
+2. [Project Overview](#2-project-overview)
+3. [Key Benefits of Containerization](#3-key-benefits-of-containerization)
+4. [Technologies Used](#4-technologies-used)
+5. [System Architecture](#5-system-architecture)
+6. [Docker Architecture](#6-docker-architecture)
+7. [Project Directory Structure](#7-project-directory-structure)
+8. [How to Build Docker Images](#8-how-to-build-docker-images)
+9. [How to Run the Containers](#9-how-to-run-the-containers)
+10. [How to Access the Application](#10-how-to-access-the-application)
+11. [Local Development (Zero-Docker Standalone Mode)](#11-local-development-zero-docker-standalone-mode)
+12. [Role-Based Dashboard Features](#12-role-based-dashboard-features)
+13. [API Endpoints Documentation](#13-api-endpoints-documentation)
+14. [Future Enhancements](#14-future-enhancements)
+
+---
+
+## 1. Live Cloud Deployment (Vercel)
+
+The application is deployed live with continuous deployment connected directly to this GitHub repository:
+
+| Service Tier | URL | Status | Description |
+| :--- | :--- | :--- | :--- |
+| **Production Web Portal** | [https://college-portal-self.vercel.app](https://college-portal-self.vercel.app) | `Active (200 OK)` | Responsive portal & role-based dashboards |
+| **Backend API Health Probe** | [https://college-portal-self.vercel.app/api/health](https://college-portal-self.vercel.app/api/health) | `Healthy (200 OK)` | Automated JSON health check |
+| **Container Telemetry API** | [https://college-portal-self.vercel.app/api/container-status](https://college-portal-self.vercel.app/api/container-status) | `Active (200 OK)` | Real-time cluster hardware & process metrics |
+| **AI Risk Prediction API** | [https://college-portal-self.vercel.app/api/student-risk/1](https://college-portal-self.vercel.app/api/student-risk/1) | `Active (200 OK)` | Heuristic student risk computation |
+| **Mobile Experience** | Phone & Tablet Optimized | `Responsive` | Thumb-friendly swipeable tabs + slide-in drawer |
 
 ---
 
@@ -221,10 +240,18 @@ docker compose down -v
 
 ---
 
-## 9. How to Access the Application
+## 10. How to Access the Application
 
-Once started, access the application services via your browser:
+Access the application either via the live cloud deployment or locally:
 
+### Live Cloud Deployment (Vercel)
+| Tier | URL | Purpose |
+| :--- | :--- | :--- |
+| **Cloud Web Portal** | [https://college-portal-self.vercel.app](https://college-portal-self.vercel.app) | Live production portal & role dashboards |
+| **Cloud Health Check** | [https://college-portal-self.vercel.app/api/health](https://college-portal-self.vercel.app/api/health) | Live serverless health probe |
+| **Cloud Telemetry Status** | [https://college-portal-self.vercel.app/api/container-status](https://college-portal-self.vercel.app/api/container-status) | Real-time cluster hardware metrics |
+
+### Local Docker Environment
 | Tier | URL | Purpose |
 | :--- | :--- | :--- |
 | **Frontend Web Portal** | `http://localhost:3000` | Main responsive portal & role dashboards |
