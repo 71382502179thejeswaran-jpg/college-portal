@@ -1241,8 +1241,9 @@ app.get('*', (req, res) => {
 });
 
 // Start Server
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`
+if (require.main === module) {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`
   =============================================================
   🚀 Smart College Platform & Cloud Microservice Active
   -------------------------------------------------------------
@@ -1254,5 +1255,8 @@ app.listen(PORT, '0.0.0.0', () => {
   🛡️ Observability:http://localhost:${PORT}/api/container-events
   🎓 Portal UI:   http://localhost:${PORT}/
   =============================================================
-  `);
-});
+    `);
+  });
+}
+
+module.exports = app;
